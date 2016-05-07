@@ -9,8 +9,8 @@
   </parent>
   <groupId>com.javatechnics</groupId>
   <artifactId>libusb4java</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>libusb4java2</name>
+  <version>1.0-0</version>
+  <name>libusb4java</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -19,5 +19,67 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>libusb</artifactId>
+      <version>1.0-0</version>
+    </dependency>
   </dependencies>
+  
+  <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <libusb.dir>${project.parent.basedir}/libusb</libusb.dir>
+        <libusb.build.dir>${libusb.dir}/build</libusb.build.dir>
+        <libusb.install.dir>${libusb.build.dir}/install</libusb.install.dir>
+        <libusb4java.build.dir>${project.basedir}/build</libusb4java.build.dir>
+    </properties>
+  <build>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-clean-plugin</artifactId>
+              <version>3.0.0</version>
+              <configuration>
+                  <filesets>
+                      <fileset>
+                          <directory>${libusb4java.build.dir}</directory>
+                      </fileset>
+                  </filesets>
+              </configuration>
+          </plugin>
+          <plugin>
+              <groupId>com.googlecode.cmake-maven-project</groupId>
+              <artifactId>cmake-maven-plugin</artifactId>
+              <version>3.4.1-b2-SNAPSHOT</version>
+              <executions>
+                  <execution>
+                      <id>cmake-generate</id>
+                      <goals>
+                          <goal>generate</goal>
+                      </goals>
+                      <phase>generate-sources</phase>
+                      <configuration>
+                          <sourcePath>${project.basedir}</sourcePath>
+                          <targetPath>${project.basedir}/build</targetPath>
+                          <generator>Unix Makefiles</generator>
+                          <options>
+                              <option>-DLibUsb_LIBRARIES:STRING=${libusb.install.dir}/lib/libusb-1.0.so</option>
+                              <option>-DLibUsb_INCLUDE_DIRS:STRING=${libusb.install.dir}/include/libusb-1.0</option>
+                          </options>
+                      </configuration>
+                  </execution>
+                  <execution>
+                      <id>cmake-compile</id>
+                      <goals>
+                          <goal>compile</goal>
+                      </goals>
+                      <phase>compile</phase>
+                      <configuration>
+                          <projectDirectory>${libusb4java.build.dir}</projectDirectory>
+                      </configuration>
+                  </execution>
+              </executions>
+          </plugin>
+      </plugins>
+  </build>
 </project>
